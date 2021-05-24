@@ -1,4 +1,5 @@
-CMD := sbatch submit.sh
+#CMD := sbatch submit.sh
+CMD := python
 # {echo | python | sbatch submit.sh | sbatch --array=1-5 submit.sh}
 FILE := main
 
@@ -20,10 +21,11 @@ SID := 742
 ELIST :=  $(shell seq 1 175)
 SID := 743
 ELIST :=  $(shell seq 1 125)
-SID := 763
-ELIST :=  $(shell seq 1 80)
-SID := 798
-ELIST :=  $(shell seq 1 195)
+#SID := 763
+#ELIST := 20 24
+#ELIST :=  $(shell seq 1 80)
+#SID := 798
+#ELIST :=  $(shell seq 1 195)
 
 # Choose which word column to use.
 # Options: word lemmatized_word stemmed_word
@@ -41,21 +43,24 @@ PRED_COL := bart_target_prob
 PD = $(shell echo ${PRED_COL} | head -c 4)
 
 # datum
-DS := podcast-datum-glove-50d.csv
+#DS := podcast-datum-glove-50d.csv
 # DS := podcast-datum-gpt2-xl-c_1024-previous-pca_50d.csv
-
-# SE := 5000-sig-elec-50d-onethresh-01.csv
+#DS := NY763_111_Part1_conversation1/misc/NY763_111_Part1_conversation1_datum_conversation_trimmed.txt
+DS := eric_embeddings-pca-50d-hg.csv
+#SE := 5000-sig-elec-50d-onethresh-01.csv
+SE := bobbi.csv
 NW := nonWords
 WV := all
-NP := 1000
+#NP := 1000
+NP := 1
 LAGS := {-2000..2000..25}
 DT := $(shell date +"%Y%m%d")
 WS := 200
 GPT2 := 1
-GLOVE := 1
+GLOVE := 0
 MWF := 1
 # SH := --shuffle
-PSH := --phase-shuffle
+#PSH := --phase-shuffle
 # PIL := mturk
 
 PDIR := $(shell dirname `pwd`)
@@ -66,8 +71,6 @@ link-data:
 simple-encoding:
 	mkdir -p logs
 	$(CMD) code/podenc_$(FILE).py \
-		--sid $(SID) \
-		--electrodes $(ELIST) \
 		--datum-emb-fn $(DS) \
 		--window-size $(WS) \
 		--word-value $(WV) \
@@ -79,9 +82,11 @@ simple-encoding:
 		--sig-elec-file $(SE) \
 		--min-word-freq $(MWF) \
 		$(SH) \
-		$(PSH) \
-		--output-parent-dir no-shuffle \
+		--output-parent-dir no-shuffle-true-pca \
 		--output-prefix '';\
+		#$(PSH) \
+		#--sid $(SID) \
+		#--electrodes $(ELIST) \
 
 
 encoding-perm-cluster:

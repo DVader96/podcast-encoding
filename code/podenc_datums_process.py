@@ -11,19 +11,20 @@ if __name__ == '__main__':
 
     # input_file_name = 'podcast-aligned-datum-bert-large-uncased-whole-word-masking.csv'
     # input_file_name = 'podcast-aligned-datum-gpt2-xl-c_1024-previous.csv'
-    input_file_name = 'podcast-aligned-datum-glove-50d.csv'
-
-    pca_flag = 0
+    #input_file_name = 'podcast-aligned-datum-glove-50d.csv'
+    input_file_name = 'eric_embeddings.csv'
+    pca_flag = 1
     concat_flag = 0
-    avg_flag = 1
-    shuffle_flag = 1
+    avg_flag = 0
+    shuffle_flag = 0
 
     host_name = socket.gethostname()
-
+    
     if 'tiger' in host_name:
+        print('in tiger')
         PROJ_DIR = '/projects/HASSON/247'
         DATUMS_FOLDER = os.path.join(
-            PROJ_DIR, 'data/podcast/NY777_111_Part1_conversation1/misc')
+            PROJ_DIR, 'data/podcast/')
     elif 'scotty' in host_name:
         PROJ_DIR = '/mnt/bucket/labs/hasson/ariel/247'
         DATUMS_FOLDER = os.path.join(PROJ_DIR, 'models/podcast-datums')
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     shuffle_output_file_name = file_name + '-InClassShuffle-hg' + file_ext
 
     # Read the original embeddings as dataframes
-    df_current = pd.read_csv(input_file_name)
+    df_current = pd.read_csv(os.path.join(DATUMS_FOLDER, input_file_name))
     print(df_current.shape, df_current['word'].nunique())
     print(df_current.shape, df_current['lemmatized_word'].nunique())
 
