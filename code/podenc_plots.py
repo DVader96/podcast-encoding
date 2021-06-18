@@ -58,31 +58,42 @@ def plot_layers(num_layers, in_type):
     lags = np.arange(-2000, 2001, 25)
     init_grey = 1 
     max_cors = []
+    zero_cors = []
+    lag_300_cors = []
     for i in range(num_layers):
         #breakpoint()
         ldir = glob.glob('/scratch/gpfs/eham/podcast-encoding/results/no-shuffle-' + in_type + '-layer' + str(i) + '/*')
         layer = extract_correlations(ldir)
         max_cors.append(np.max(layer))
+        zero_cors.append(layer[len(layer)//2])
+        lag_300_cors.append(layer[len(layer)//2 + 12]) 
+
         #breakpoint()
         rgb = np.random.rand(3,)
         init_grey -= 1/(math.exp(i*0.01)*(num_layers+1))
         ax.plot(lags, layer, color=str(init_grey), label='layer' + str(i)) #**
-
-    ax.plot(lags, extract_correlations(glob.glob('/scratch/gpfs/eham/podcast-encoding/results/no-shuffle-lm-out/*')), color = 'r', label='contextual') 
+    out_layer = extract_correlations(glob.glob('/scratch/gpfs/eham/podcast-encoding/results/no-shuffle-lm-out/*'))
+    max_cors.append(np.max(out_layer))
+    zero_cors.append(out_layer[len(out_layer)//2])
+    lag_300_cors.append(out_layer[len(out_layer)//2 + 12]) 
+    ax.plot(lags, out_layer, color = 'r', label='contextual') 
     ax.legend()
     ax.set(xlabel='lag (s)', ylabel='correlation', title= in_type + ' Encoding Over Layers')
     ax.grid()
 
-    fig.savefig("comparison_new_" + in_type + str(num_layers) + "layers_no_norm_pca.png")
+    fig.savefig("comparison_new_gpt2" + in_type + str(num_layers) + "layers_no_norm_pca.png")
     #fig.savefig("comparison_old_p_weight_test.png")
     #plt.show()
     
     fig2 = plt.figure()
-    plt.plot(range(len(max_cors)), max_cors, '-o')
+    #plt.plot(range(len(max_cors)), max_cors, '-o')
+    plt.plot(range(len(zero_cors)), zero_cors, '-o',color= 'b', label='0ms')
+    plt.plot(range(len(lag_300_cors)), lag_300_cors, '-o',color= 'g', label = '300ms')
     plt.title('Corr vs depth')
     plt.xlabel('Layer')
     plt.ylabel('R')
-    fig2.savefig('Corr_vs_Depth.png')
+    plt.legend()
+    fig2.savefig('Corr_vs_Depth_gpt2.png')
 
 if __name__ == '__main__':
     #plot_layers(11, 'key')
